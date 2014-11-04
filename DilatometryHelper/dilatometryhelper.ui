@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DilatometryHelper</class>
+ <widget class="QMainWindow" name="DilatometryHelper">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>295</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DilatometryHelper</string>
+  </property>
+  <property name="locale">
+   <locale language="Ukrainian" country="Ukraine"/>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QPushButton" name="pbStartProcess">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>240</y>
+      <width>201</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Обробити файли</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>381</width>
+      <height>115</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Файл з температурними показами</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="leTempr"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pbOpenTempr">
+         <property name="text">
+          <string>Відкрити файл</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Файл з показаа дилатометра</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QLineEdit" name="leDilat"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pbOpenDilat">
+         <property name="text">
+          <string>Відкрити файл</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>381</width>
+      <height>82</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLineEdit" name="leFinalValueDilat"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Кінцеве значення показів дилатометра</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="leStartHight"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Висота зразка до відпалу, мм</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLineEdit" name="leFinHight"/>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Висота зразка після відпалу, мм</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <zorder>leTempr</zorder>
+   <zorder>pbOpenTempr</zorder>
+   <zorder>pbOpenDilat</zorder>
+   <zorder>leDilat</zorder>
+   <zorder>leTempr</zorder>
+   <zorder>leDilat</zorder>
+   <zorder>pbOpenTempr</zorder>
+   <zorder>pbOpenDilat</zorder>
+   <zorder>label</zorder>
+   <zorder>pbOpenTempr</zorder>
+   <zorder>pbOpenDilat</zorder>
+   <zorder>label</zorder>
+   <zorder></zorder>
+   <zorder>label_2</zorder>
+   <zorder></zorder>
+   <zorder>leFinalValueDilat</zorder>
+   <zorder>label_3</zorder>
+   <zorder>leFinalValueDilat</zorder>
+   <zorder>label_3</zorder>
+   <zorder>pbStartProcess</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
