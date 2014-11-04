@@ -16,7 +16,7 @@ public:
     ~DilatometryHelper();
 
 private:
-    void processFiles();
+    void processFiles(std::vector<double>& aData, QString aFileName);
 
 private slots:
     void on_pbOpenTempr_clicked();

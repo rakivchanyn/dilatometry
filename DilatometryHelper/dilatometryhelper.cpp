@@ -19,9 +19,9 @@ DilatometryHelper::~DilatometryHelper()
     delete ui;
 }
 
-void DilatometryHelper::processFiles()
+void DilatometryHelper::processFiles(std::vector <double>& aData, QString aFileName)
 {
-    QFile file(ui->leTempr->text());
+    QFile file(aFileName);
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen())
     {
@@ -31,18 +31,44 @@ void DilatometryHelper::processFiles()
     QTextStream strim(&file);
     QString temper;
     temper.append(strim.readAll());
-    QString temp;
-    foreach (char c, temper)
+    QString tag;
+    QString num;
+    int i = 0;
+    QLocale ukr(QLocale::Ukrainian);
+    foreach (QChar c, temper)
     {
         if (c == '<')
         {
-            temp.append(c);
+            tag.clear();
+            tag.append(c);
             continue;
         }
-        if (c == '>')
+        else if (c == '>')
         {
-            temp.append(c);
+            tag.append(c);
+            if (tag == "</TD>")
+            {
+                ++i;
+                double t = ukr.toDouble(num);
+                if (i%2 == 0)
+                {
+
+                    aData.push_back(t);
+                }
+                num.clear();
+            }
             continue;
+        }
+        else
+        {
+            if (tag == "<TD>")
+            {
+                num.append(c);
+            }
+            else
+            {
+                tag.append(c);
+            }
         }
 
     }
@@ -50,17 +76,21 @@ void DilatometryHelper::processFiles()
 
 void DilatometryHelper::on_pbOpenTempr_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "./", "Text File (*.txt)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "..", "Text File (*.txt)");
     ui->leTempr->setText(fileName);
 }
 
 void DilatometryHelper::on_pbOpenDilat_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "./", "Text File (*.txt)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "..", "Text File (*.txt)");
     ui->leDilat->setText(fileName);
 }
 
 void DilatometryHelper::on_pbStartProcess_clicked()
 {
-    processFiles();
+    std::vector <double> temperature;
+    processFiles(temperature, ui->leTempr->text());
+    std::vector <double> dilatometry;
+    processFiles(dilatometry, ui->leDilat->text());
+//    for
 }
