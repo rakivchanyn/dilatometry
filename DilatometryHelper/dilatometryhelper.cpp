@@ -19,18 +19,20 @@ DilatometryHelper::~DilatometryHelper()
     delete ui;
 }
 
-void DilatometryHelper::processFiles(std::vector <double>& aData, QString aFileName)
+bool DilatometryHelper::processFiles(std::vector <double>& aData, QString aFileName)
 {
     QFile file(aFileName);
     file.open(QIODevice::ReadOnly);
     if (!file.isOpen())
     {
-        QMessageBox::information(this, "Помилка", "Неможливо відкрити файл з температурою!\n"
-                                 "Перевірьте чи правильно введене ім'я файлу.");
+        QMessageBox::warning(this, "Помилка", "Неможливо відкрити файл: \n" + aFileName +
+                                 "\nПеревірьте чи правильно введене ім'я файлу.");
+        return false;
     }
     QTextStream strim(&file);
     QString temper;
     temper.append(strim.readAll());
+    file.close();
     QString tag;
     QString num;
     int i = 0;
@@ -70,8 +72,8 @@ void DilatometryHelper::processFiles(std::vector <double>& aData, QString aFileN
                 tag.append(c);
             }
         }
-
     }
+    return true;
 }
 
 void DilatometryHelper::on_pbOpenTempr_clicked()
@@ -89,9 +91,11 @@ void DilatometryHelper::on_pbOpenDilat_clicked()
 void DilatometryHelper::on_pbStartProcess_clicked()
 {
     std::vector <double> temperature;
-    processFiles(temperature, ui->leTempr->text());
+    if (!processFiles(temperature, ui->leTempr->text()))
+        return;
     std::vector <double> dilatometry;
-    processFiles(dilatometry, ui->leDilat->text());
+    if (!processFiles(dilatometry, ui->leDilat->text()))
+        return;
 
     QLocale ukr(QLocale::Ukrainian);
     double ratio = (ukr.toDouble(ui->leStartHight->text()) - ukr.toDouble(ui->leFinHight->text())) /
@@ -100,10 +104,48 @@ void DilatometryHelper::on_pbStartProcess_clicked()
                             (ukr.toDouble(ui->leFinalValueDilat->text()) * (-1.0)) :
                             ukr.toDouble(ui->leFinalValueDilat->text());
     double firstDilVal = dilatometry.front();
-    double rphight = ratio / finDilatData + firstDilVal;
-    for (auto it : dilatometry)
+    double rphight = ratio / (finDilatData + firstDilVal);
+    for (auto& it : dilatometry)
     {
            double t = it;
-           it = (firstDilVal - t) * rphight;
+           it = (t - firstDilVal) * rphight;
     }
+
+    QFile file("output.txt");
+    if (!file.open(QFile::WriteOnly | QFile::Text))
+    {
+        QMessageBox::warning(this, "Помилка!", "Неможливо створити файл output.txt");
+        return;
+    }
+    QTextStream out(&file);
+    unsigned int maxSize = (temperature.size() > dilatometry.size()) ?
+                            dilatometry.size() : temperature.size();
+    for (std::vector<double>::iterator t = temperature.begin(), d = dilatometry.begin();
+         t != temperature.end() || d != dilatometry.end();
+         ++t, ++d)
+    {
+        out << *t << "\t" << *d << "\n";
+    }
+    file.close();
+}
+
+void DilatometryHelper::on_leFinalValueDilat_editingFinished()
+{
+    QString t = ui->leFinalValueDilat->text();
+    t.replace(".", ",");
+    ui->leFinalValueDilat->setText(t);
+}
+
+void DilatometryHelper::on_leStartHight_editingFinished()
+{
+    QString t = ui->leStartHight->text();
+    t.replace(".", ",");
+    ui->leStartHight->setText(t);
+}
+
+void DilatometryHelper::on_leFinHight_editingFinished()
+{
+    QString t = ui->leFinHight->text();
+    t.replace(".", ",");
+    ui->leFinHight->setText(t);
 }
