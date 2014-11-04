@@ -92,5 +92,18 @@ void DilatometryHelper::on_pbStartProcess_clicked()
     processFiles(temperature, ui->leTempr->text());
     std::vector <double> dilatometry;
     processFiles(dilatometry, ui->leDilat->text());
-//    for
+
+    QLocale ukr(QLocale::Ukrainian);
+    double ratio = (ukr.toDouble(ui->leStartHight->text()) - ukr.toDouble(ui->leFinHight->text())) /
+            ukr.toDouble(ui->leStartHight->text());
+    double finDilatData = (ukr.toDouble(ui->leFinalValueDilat->text()) < 0.0) ?
+                            (ukr.toDouble(ui->leFinalValueDilat->text()) * (-1.0)) :
+                            ukr.toDouble(ui->leFinalValueDilat->text());
+    double firstDilVal = dilatometry.front();
+    double rphight = ratio / finDilatData + firstDilVal;
+    for (auto it : dilatometry)
+    {
+           double t = it;
+           it = (firstDilVal - t) * rphight;
+    }
 }
