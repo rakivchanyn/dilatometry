@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QIODevice>
 #include <QMessageBox>
+#include <QClipboard>
 
 DilatometryHelper::DilatometryHelper(QWidget *parent) :
     QMainWindow(parent),
@@ -78,13 +79,13 @@ bool DilatometryHelper::processFiles(std::vector <double>& aData, QString aFileN
 
 void DilatometryHelper::on_pbOpenTempr_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "..", "Text File (*.txt)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "./", "Text File (*.txt)");
     ui->leTempr->setText(fileName);
 }
 
 void DilatometryHelper::on_pbOpenDilat_clicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "..", "Text File (*.txt)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open file"), "./", "Text File (*.txt)");
     ui->leDilat->setText(fileName);
 }
 
@@ -118,15 +119,18 @@ void DilatometryHelper::on_pbStartProcess_clicked()
         return;
     }
     QTextStream out(&file);
-    unsigned int maxSize = (temperature.size() > dilatometry.size()) ?
-                            dilatometry.size() : temperature.size();
+    QString data;
     for (std::vector<double>::iterator t = temperature.begin(), d = dilatometry.begin();
          t != temperature.end() || d != dilatometry.end();
          ++t, ++d)
     {
         out << *t << "\t" << *d << "\n";
+        data += (QString::number(*t) + "\t" + QString::number(*d) + "\n");
     }
     file.close();
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setText(data);
+    QMessageBox::information(this, "Робота закінчена", "Дані оброблено!\nСтворено файл output.txt.");
 }
 
 void DilatometryHelper::on_leFinalValueDilat_editingFinished()
