@@ -13,6 +13,7 @@ DilatometryHelper::DilatometryHelper(QWidget *parent) :
     ui(new Ui::DilatometryHelper)
 {
     ui->setupUi(this);
+    this->setWindowFlags(this->windowFlags() | Qt::MSWindowsFixedSizeDialogHint);
 }
 
 DilatometryHelper::~DilatometryHelper()
@@ -98,12 +99,33 @@ void DilatometryHelper::on_pbStartProcess_clicked()
     if (!processFiles(dilatometry, ui->leDilat->text()))
         return;
 
+    //Processing data:
     QLocale ukr(QLocale::Ukrainian);
-    double ratio = (ukr.toDouble(ui->leStartHight->text()) - ukr.toDouble(ui->leFinHight->text())) /
-            ukr.toDouble(ui->leStartHight->text());
+
+    if (ui->leFinalValueDilat->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Неправильно введені дані", "Введіть кінцеве значення показів дилатометра!");
+        return;
+    }
     double finDilatData = (ukr.toDouble(ui->leFinalValueDilat->text()) < 0.0) ?
                             (ukr.toDouble(ui->leFinalValueDilat->text()) * (-1.0)) :
                             ukr.toDouble(ui->leFinalValueDilat->text());
+
+    if (ui->leStartHight->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Неправильно введені дані", "Введіть початкову висоту зразка!");
+        return;
+    }
+    double sHight = ukr.toDouble(ui->leStartHight->text());
+
+    if (ui->leFinHight->text().isEmpty())
+    {
+        QMessageBox::warning(this, "Неправильно введені дані", "Введіть кінцеву висоту зразка!");
+        return;
+    }
+    double fHight = ukr.toDouble(ui->leFinHight->text());
+
+    double ratio = (sHight - fHight) / sHight;
     double firstDilVal = dilatometry.front();
     double rphight = ratio / (finDilatData + firstDilVal);
     for (auto& it : dilatometry)
@@ -111,11 +133,25 @@ void DilatometryHelper::on_pbStartProcess_clicked()
            double t = it;
            it = (t - firstDilVal) * rphight;
     }
+    //End processing data
 
+    //Saving data
     QFile file("output.txt");
-    if (!file.open(QFile::WriteOnly | QFile::Text))
+    if (file.exists())
     {
-        QMessageBox::warning(this, "Помилка!", "Неможливо створити файл output.txt");
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Файл вже існує!",
+                                      "Такий файл вже існує, чи хочете Ви продовжити обробку даних?\n"
+                                      "При цьому попередні дані будуть втрачені!",
+                                        QMessageBox::Yes|QMessageBox::No);
+        if(reply == QMessageBox::No)
+        {
+          return;
+        }
+    }
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    {
+        QMessageBox::warning(this, "Помилка!", "Неможливо створити файл чи отримати доступ до файлу output.txt");
         return;
     }
     QTextStream out(&file);
@@ -125,12 +161,13 @@ void DilatometryHelper::on_pbStartProcess_clicked()
          ++t, ++d)
     {
         out << *t << "\t" << *d << "\n";
-        data += (QString::number(*t) + "\t" + QString::number(*d) + "\n");
+        data += (QString::number(*t) + "\t" + QString::number(*d) + "\n"); //saving data to clipboard
     }
     file.close();
     QClipboard* clipboard = QApplication::clipboard();
     clipboard->setText(data);
-    QMessageBox::information(this, "Робота закінчена", "Дані оброблено!\nСтворено файл output.txt.");
+    QMessageBox::information(this, "Статус задачі", "Робота закінчена\n"
+                             "Дані записані в файл \"output.txt.\" та скопійовані в буфер обміну");
 }
 
 void DilatometryHelper::on_leFinalValueDilat_editingFinished()
